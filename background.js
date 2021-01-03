@@ -1,22 +1,12 @@
 function listener(details) {
-  let filter = browser.webRequest.filterResponseData(details.requestId);
-  let decoder = new TextDecoder("utf-8");
-  let encoder = new TextEncoder();
+  if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
 
-  filter.ondata = event => {
-    let str = decoder.decode(event.data, {stream: true});
-    // Just change any instance of Example in the HTTP response
-    // to WebExtension Example.
-    str = str.replace(/Example/g, 'WebExtension Example');
-    filter.write(encoder.encode(str));
-    filter.disconnect();
-  }
+  console.log('events');
 
   return {};
 }
 
-browser.webRequest.onBeforeRequest.addListener(
-  listener,
-  {urls: ["https://example.com/*"], types: ["main_frame"]},
-  ["blocking"]
-);
+browser.webRequest.onBeforeRequest.addListener(listener, {
+  urls: ["https://www.blaseball.com/database/eventResults?*"],
+  types: ["xmlhttprequest"]
+});
