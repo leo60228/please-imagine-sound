@@ -10,7 +10,7 @@
   },
 
   "permissions": [
-    "webRequest", "https://www.blaseball.com/*"
+    "webRequest", "webRequestBlocking", "https://www.blaseball.com/*"
   ],
 
   "background": {
