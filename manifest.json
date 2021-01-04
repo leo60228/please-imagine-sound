@@ -3,14 +3,14 @@
   "description": "Blaseball as Sam Rosenthal intended.",
   "manifest_version": 2,
   "name": "Please Imagine Sound",
-  "version": "1.0",
+  "version": "0.0.2",
   "homepage_url": "https://github.com/leo60228/please-imagine-sound",
   "icons": {
     "48": "lighthouse.svg"
   },
 
   "permissions": [
-    "webRequest", "webRequestBlocking", "https://www.blaseball.com/*"
+    "webRequest", "https://www.blaseball.com/*"
   ],
 
   "background": {
