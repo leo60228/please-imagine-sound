@@ -1,21 +1,62 @@
-const simpleSounds = {
-  'https://www.blaseball.com/api/chooseIdol': 'sounds/ahhhh.mp3',
-  'https://www.blaseball.com/api/eatADangPeanut': 'sounds/peanut.wav',
-  //'https://www.blaseball.com/api/buyUpdateFavoriteTeam': 'sounds/flute.mp3',
+const fixedSounds = {
+  '/api/chooseIdol': sound('ahhhh.mp3'),
+  '/api/eatADangPeanut': sound('peanut.wav'),
+  //'/api/buyUpdateFavoriteTeam': sound('flute.mp3'),
 };
 
-function simpleSoundsListener(details) {
+const userActions = [
+  '/api/bet',
+  '/api/buyADangPeanut',
+  '/api/buyADangSquirrel',
+  '/api/buySnack',
+  '/api/buyUnlockElection',
+  '/api/buyUnlockShop',
+  '/api/buyUpdateFavoriteTeam',
+  '/api/buyVote',
+  '/api/chooseIdol',
+  '/api/eatADangPeanut',
+  '/api/logBeg',
+  '/api/payTribute',
+  '/api/updateFavoriteTeam',
+  '/api/updateSettings',
+  '/api/vote',
+];
+
+const foghornChance = 1 / 100;
+
+function play(sound) {
+  const audio = new Audio(`sounds/${sound}`);
+  audio.play();
+}
+
+function sound(sound) {
+  return () => play(sound);
+}
+
+function requestListener(details) {
   if (details.hasOwnProperty('originUrl')) {
     if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
   } else if (details.hasOwnProperty('initiator')) {
     if (details.initiator !== 'https://www.blaseball.com') return;
   }
 
-  if (simpleSounds.hasOwnProperty(details.url)) {
-    const audio = new Audio(simpleSounds[details.url]);
-    audio.play();
-  } else {
-    console.log(`unknown: ${details.url}`);
+  const url = new URL(details.url);
+  const path = url.pathname;
+
+  console.groupCollapsed(path);
+
+  try {
+    if (userActions.includes(path) && Math.random() < foghornChance) {
+      console.log('[FOGHORN SOUND]');
+      play('foghorn.mp3');
+    } else if (fixedSounds.hasOwnProperty(path)) {
+      console.log('fixed sound');
+      fixedSounds[path]();
+    } else {
+      console.log('ignoring');
+    }
+  } finally {
+    console.groupEnd();
   }
 
   return {};
@@ -51,23 +92,8 @@ function simpleSoundsListener(details) {
 //  return {};
 //}
 
-function foghornSoundListener(details) {
-  if (details.hasOwnProperty('originUrl')) {
-    if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
-  } else if (details.hasOwnProperty('initiator')) {
-    if (details.initiator !== 'https://www.blaseball.com') return;
-  }
-
-  if (Math.random() < 0.01) {
-    const audio = new Audio('sounds/foghorn.mp3');
-    audio.play();
-  }
-
-  return {};
-}
-
-browser.webRequest.onBeforeRequest.addListener(simpleSoundsListener, {
-  urls: Object.keys(simpleSounds),
+browser.webRequest.onBeforeRequest.addListener(requestListener, {
+  urls: ['https://www.blaseball.com/api/*'],
   types: ['xmlhttprequest']
 });
 
@@ -75,39 +101,3 @@ browser.webRequest.onBeforeRequest.addListener(simpleSoundsListener, {
 //  urls: ['https://www.blaseball.com/events/streamData'],
 //  types: ['xmlhttprequest']
 //}, ['blocking']);
-
-browser.webRequest.onBeforeRequest.addListener(foghornSoundListener, {
-  urls: [
-    'https://www.blaseball.com/api/bet',
-    'https://www.blaseball.com/api/bet?*',
-    'https://www.blaseball.com/api/buyADangPeanut',
-    'https://www.blaseball.com/api/buyADangPeanut?*',
-    'https://www.blaseball.com/api/buyADangSquirrel',
-    'https://www.blaseball.com/api/buyADangSquirrel?*',
-    'https://www.blaseball.com/api/buySnack',
-    'https://www.blaseball.com/api/buySnack?*',
-    'https://www.blaseball.com/api/buyUnlockElection',
-    'https://www.blaseball.com/api/buyUnlockElection?*',
-    'https://www.blaseball.com/api/buyUnlockShop',
-    'https://www.blaseball.com/api/buyUnlockShop?*',
-    'https://www.blaseball.com/api/buyUpdateFavoriteTeam',
-    'https://www.blaseball.com/api/buyUpdateFavoriteTeam?*',
-    'https://www.blaseball.com/api/buyVote',
-    'https://www.blaseball.com/api/buyVote?*',
-    'https://www.blaseball.com/api/chooseIdol',
-    'https://www.blaseball.com/api/chooseIdol?*',
-    'https://www.blaseball.com/api/eatADangPeanut',
-    'https://www.blaseball.com/api/eatADangPeanut?*',
-    'https://www.blaseball.com/api/logBeg',
-    'https://www.blaseball.com/api/logBeg?*',
-    'https://www.blaseball.com/api/payTribute',
-    'https://www.blaseball.com/api/payTribute?*',
-    'https://www.blaseball.com/api/updateFavoriteTeam',
-    'https://www.blaseball.com/api/updateFavoriteTeam?*',
-    'https://www.blaseball.com/api/updateSettings',
-    'https://www.blaseball.com/api/updateSettings?*',
-    'https://www.blaseball.com/api/vote',
-    'https://www.blaseball.com/api/vote?*',
-  ],
-  types: ['xmlhttprequest']
-});
