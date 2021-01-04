@@ -5,7 +5,11 @@ const simpleSounds = {
 };
 
 function simpleSoundsListener(details) {
-  if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
+  if (details.hasOwnProperty('originUrl')) {
+    if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
+  } else if (details.hasOwnProperty('initiator')) {
+    if (details.initiator !== 'https://www.blaseball.com') return;
+  }
 
   if (simpleSounds.hasOwnProperty(details.url)) {
     const audio = new Audio(simpleSounds[details.url]);
@@ -48,7 +52,11 @@ function simpleSoundsListener(details) {
 //}
 
 function foghornSoundListener(details) {
-  if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
+  if (details.hasOwnProperty('originUrl')) {
+    if (new URL(details.originUrl).host !== 'www.blaseball.com') return;
+  } else if (details.hasOwnProperty('initiator')) {
+    if (details.initiator !== 'https://www.blaseball.com') return;
+  }
 
   if (Math.random() < 0.01) {
     const audio = new Audio('sounds/foghorn.mp3');
